@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Identity;
 
 namespace BusinessLogic.Services;
 
-public class AccountService(AccountRepository repository)
+public class AccountService(AccountRepository repository, JwtService jwtService)
 {
     public void Register(string username, string firstName, string password)
     {
@@ -19,13 +19,13 @@ public class AccountService(AccountRepository repository)
         repository.Add(account);
     }
 
-    public void Login(string username, string password)
+    public string Login(string username, string password)
     {
         var account = repository.FindByUsername(username);
         var result = new PasswordHasher<User>().VerifyHashedPassword(account, account.HashPassword, password);
         if (result == PasswordVerificationResult.Success)
         {
-            throw new Exception("All good");
+           return jwtService.GenerateToken(account);
         }
         else
         {

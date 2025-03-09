@@ -1,5 +1,6 @@
 using Backend.API.DTO;
 using BusinessLogic.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Backend.API.Controllers;
@@ -18,13 +19,21 @@ public class AuthController(AccountService accountService) : ControllerBase
     [HttpPost("login")]
     public IActionResult Login([FromBody] LoginDto loginRequest)
     {
-        accountService.Login(loginRequest.Username, loginRequest.Password);
-        return Ok();
+        var token = accountService.Login(loginRequest.Username, loginRequest.Password);
+        return Ok(token);
     }
-
+    [Authorize]
+    [HttpGet("testSecure")]
+    public IActionResult TestSecure()
+    {
+        return Ok(new List<string> {"protect1", "protect2"});
+    }
+    
+    
     [HttpGet("test")]
     public IActionResult Test()
     {
-        return Ok();
+        return Ok(new List<string> {"value1", "value2"});
     }
+    
 }
