@@ -11,15 +11,15 @@ public class AuthController(AccountService accountService) : ControllerBase
 {
 
     [HttpPost("register")]
-    public IActionResult Register([FromBody] RegisterDto registerRequest)
+    public async Task<IActionResult> Register([FromBody] RegisterDto registerRequest)
     {
         accountService.Register(registerRequest.Username, registerRequest.FirstName, registerRequest.Password);
         return Ok();
     }
     [HttpPost("login")]
-    public IActionResult Login([FromBody] LoginDto loginRequest)
+    public async Task<IActionResult> Login([FromBody] LoginDto loginRequest)
     {
-        var token = accountService.Login(loginRequest.Username, loginRequest.Password);
+        var token = await accountService.Login(loginRequest.Username, loginRequest.Password);
         return Ok(token);
     }
     [Authorize]

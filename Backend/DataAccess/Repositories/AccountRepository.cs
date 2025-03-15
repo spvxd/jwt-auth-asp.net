@@ -1,15 +1,24 @@
+using Microsoft.EntityFrameworkCore;
+
 namespace DataAccess.Repositories;
 
 public class AccountRepository
 {
-    private static IDictionary<string, User> Users = new Dictionary<string, User>();
-    public void Add(User user)
+    private readonly AppDbContext _context;
+
+    public AccountRepository(AppDbContext context)
     {
-        Users[user.Username] = user;
+        _context = context;
     }
 
-    public User FindByUsername(string username)
+    public async Task AddNewUserAsync(User? user)
     {
-        return Users.TryGetValue(username, out var user) ? user : null;
+        await _context.Users.AddAsync(user);
+        await _context.SaveChangesAsync();
+    }
+
+    public async Task<User> FindByUsername(string username)
+    {
+        return await _context.Users.FirstOrDefaultAsync(u => u.Username == username);
     }
 }
